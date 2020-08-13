@@ -85,6 +85,15 @@
 				return 0
 	return 1
 
+/obj/item/clothing/proc/return_own_image()
+	var/image/our_image
+	if(icon_override)
+		our_image = image(icon_override, icon_state)
+	else if(item_icons && (slot_head_str in item_icons))
+		our_image = image(item_icons[slot_head_str], icon_state)
+	our_image.color = color
+	return our_image
+
 /obj/item/clothing/proc/refit_for_species(var/target_species)
 	if(!species_restricted)
 		return //this item doesn't use the species_restricted system
@@ -188,10 +197,10 @@
 			var/obj/item/material/shard/S = material.place_shard(T)
 			M.embed(S)
 
-	playsound(src.loc, "shatter", 70, 1)
+	playsound(src.loc, "glass_break", 70, 1)
 	qdel(src)
 
-/obj/item/clothing/suit/armor/handle_shield(mob/user, var/damage, atom/damage_source = null, mob/attacker = null, var/def_zone = null, var/attack_text = "the attack")
+/obj/item/clothing/suit/armor/handle_shield(mob/user, var/on_back, var/damage, atom/damage_source = null, mob/attacker = null, var/def_zone = null, var/attack_text = "the attack")
 	if(!material) // No point checking for reflection.
 		return ..()
 
@@ -370,7 +379,7 @@
 			update_icon()
 			return
 
-		playsound(src.loc, 'sound/items/Wirecutter.ogg', 100, 1)
+		playsound(src.loc, 'sound/items/wirecutter.ogg', 100, 1)
 		user.visible_message("<span class='warning'>[user] cuts the fingertips off of \the [src].</span>","<span class='warning'>You cut the fingertips off of \the [src].</span>")
 
 		clipped = 1
@@ -508,6 +517,21 @@
 		to_chat(user, "<span class='notice'>You crawl under \the [src].</span>")
 	return 1
 
+/obj/item/clothing/head/return_own_image()
+	var/image/our_image
+	if(contained_sprite)
+		auto_adapt_species(src)
+		var/state = "[icon_species_tag ? "[icon_species_tag]_" : ""][item_state][WORN_HEAD]"
+		our_image = image(icon_override || icon, state)
+	else if(icon_override)
+		our_image = image(icon_override, icon_state)
+	else if(item_icons && (slot_head_str in item_icons))
+		our_image = image(item_icons[slot_head_str], icon_state)
+	else
+		our_image = image(INV_HEAD_DEF_ICON, icon_state)
+	our_image.color = color
+	return our_image
+
 /obj/item/clothing/head/update_icon(var/mob/user)
 
 	cut_overlays()
@@ -602,7 +626,7 @@
 		item_flags = down_item_flags
 		flags_inv = down_flags_inv
 		if(self)
-			user.visible_message("<b>[user]</b> pulls \the [src] down to hang around their neck.", span("notice", "You pull \the [src] down to hang around your neck."))
+			user.visible_message("<b>[user]</b> pulls \the [src] down to hang around their neck.", SPAN_NOTICE("You pull \the [src] down to hang around your neck."))
 	else
 		gas_transfer_coefficient = initial(gas_transfer_coefficient)
 		body_parts_covered = initial(body_parts_covered)
@@ -611,7 +635,7 @@
 		item_flags = initial(item_flags)
 		flags_inv = initial(flags_inv)
 		if(self)
-			user.visible_message("<b>[user]</b> pulls \the [src] up to cover their face.", span("notice", "You pull \the [src] up to cover your face."))
+			user.visible_message("<b>[user]</b> pulls \the [src] up to cover their face.", SPAN_NOTICE("You pull \the [src] up to cover your face."))
 	usr.update_action_buttons()
 	update_clothing_icon()
 
@@ -665,7 +689,7 @@
 	if(usr.put_in_hands(holding))
 		usr.visible_message("<span class='danger'>\The [usr] pulls \a [holding] out of their boot!</span>")
 		holding = null
-		playsound(get_turf(src), 'sound/weapons/holster/sheathout.ogg', 25)
+		playsound(get_turf(src), 'sound/weapons/holster/unholster_knife.ogg', 25)
 	else
 		to_chat(usr, "<span class='warning'>Your need an empty, unbroken hand to do that.</span>")
 		holding.forceMove(src)
@@ -748,6 +772,21 @@
 		)
 
 	valid_accessory_slots = list("armband","decor", "over")
+
+/obj/item/clothing/suit/return_own_image()
+	var/image/our_image
+	if(contained_sprite)
+		auto_adapt_species(src)
+		var/state = "[icon_species_tag ? "[icon_species_tag]_" : ""][item_state][WORN_SUIT]"
+		our_image = image(icon_override || icon, state)
+	else if(icon_override)
+		our_image = image(icon_override, icon_state)
+	else if(item_icons && (slot_head_str in item_icons))
+		our_image = image(item_icons[slot_head_str], icon_state)
+	else
+		our_image = image(INV_SUIT_DEF_ICON, icon_state)
+	our_image.color = color
+	return our_image
 
 /obj/item/clothing/suit/update_clothing_icon()
 	if (ismob(src.loc))
@@ -859,6 +898,21 @@
 	else
 		rolled_sleeves = -1
 	if(H) update_clothing_icon()
+
+/obj/item/clothing/under/return_own_image()
+	var/image/our_image
+	if(contained_sprite)
+		auto_adapt_species(src)
+		var/state = "[icon_species_tag ? "[icon_species_tag]_" : ""][item_state][WORN_UNDER]"
+		our_image = image(icon_override || icon, state)
+	else if(icon_override)
+		our_image = image(icon_override, icon_state)
+	else if(item_icons && (slot_head_str in item_icons))
+		our_image = image(item_icons[slot_head_str], icon_state)
+	else
+		our_image = image(INV_W_UNIFORM_DEF_ICON, icon_state)
+	our_image.color = color
+	return our_image
 
 /obj/item/clothing/under/update_clothing_icon()
 	if (ismob(src.loc))

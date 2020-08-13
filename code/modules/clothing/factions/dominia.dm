@@ -4,6 +4,7 @@
 	icon = 'icons/clothing/masks/lyodsuit.dmi'
 	icon_state = "dom_thermal_mask"
 	item_state = "dom_thermal_mask"
+	flags_inv = BLOCKHAIR
 	contained_sprite = TRUE
 	canremove = FALSE
 
@@ -84,7 +85,7 @@
 	if(use_check_and_message(usr))
 		return
 	if(has_down_and_sleeves == FALSE)
-		to_chat(usr, span("notice", "You cannot roll down the [src]!"))
+		to_chat(usr, SPAN_NOTICE("You cannot roll down the [src]!"))
 		return
 
 	if((rolled_sleeves == TRUE) && !(rolled_down))
@@ -93,12 +94,12 @@
 	if(rolled_down)
 		body_parts_covered = initial(body_parts_covered)
 		item_state = "[initial(item_state)]" // REMINDER!: Contained Sprites automatically take out the _un after the spritename, somehow.
-		to_chat(usr, span("notice", "You roll up your [src]."))
+		to_chat(usr, SPAN_NOTICE("You roll up your [src]."))
 		rolled_down = FALSE
 	else
 		body_parts_covered &= LOWER_TORSO|LEGS|FEET
 		item_state = "[initial(item_state)]_d"
-		to_chat(usr, span("notice", "You roll down your [src]."))
+		to_chat(usr, SPAN_NOTICE("You roll down your [src]."))
 		rolled_down = TRUE
 	update_clothing_icon()
 
@@ -110,22 +111,22 @@
 	if(use_check_and_message(usr))
 		return
 	if(has_down_and_sleeves == FALSE)
-		to_chat(usr, span("notice", "You cannot roll up your [src]'s sleeves!"))
+		to_chat(usr, SPAN_NOTICE("You cannot roll up your [src]'s sleeves!"))
 		return
 
 	if(rolled_down == TRUE)
-		to_chat(usr, span("notice", "You must roll up your [src] first!"))
+		to_chat(usr, SPAN_NOTICE("You must roll up your [src] first!"))
 		return
 
 	if(rolled_sleeves)
 		body_parts_covered = initial(body_parts_covered)
 		item_state = "[initial(item_state)]" // REMINDER!: Contained Sprites automatically take out the _un after the spritename, somehow.
-		to_chat(usr, span("notice", "You roll down your [src]'s sleeves."))
+		to_chat(usr, SPAN_NOTICE("You roll down your [src]'s sleeves."))
 		rolled_sleeves = FALSE
 	else
 		body_parts_covered &= ~(ARMS|HANDS)
 		item_state = "[initial(item_state)]_r"
-		to_chat(usr, span("notice", "You roll up your [src]'s sleeves."))
+		to_chat(usr, SPAN_NOTICE("You roll up your [src]'s sleeves."))
 		rolled_sleeves = TRUE
 	update_clothing_icon()
 
@@ -181,6 +182,7 @@
 /obj/item/clothing/under/dominia/lyodsuit/hoodie/proc/create_mask()
 	if(!mask)
 		mask = new /obj/item/clothing/mask/lyodsuit(src)
+	item_state = "dom_thermal"
 
 /obj/item/clothing/under/dominia/lyodsuit/hoodie/proc/remove_mask()
 	// Mask got nuked. Probably because of RIGs or the like.
@@ -189,6 +191,8 @@
 	if(ishuman(mask.loc))
 		var/mob/living/carbon/H = mask.loc
 		H.unEquip(mask, 1)
+		item_state = initial(item_state)
+		H.update_inv_w_uniform()
 	mask.forceMove(src)
 	hood_raised = FALSE
 
@@ -207,10 +211,10 @@
 		if(ishuman(loc))
 			var/mob/living/carbon/human/H = src.loc
 			if(H.w_uniform != src)
-				to_chat(H, span("warning", "You must be wearing \the [src] to put up the hood!"))
+				to_chat(H, SPAN_WARNING("You must be wearing \the [src] to put up the hood!"))
 				return
 			if(H.wear_mask)
-				to_chat(H, span("warning", "You're already wearing something on your head!"))
+				to_chat(H, SPAN_WARNING("You're already wearing something on your head!"))
 				return
 			else
 				H.equip_to_slot_if_possible(mask, slot_wear_mask, 0, 0, 1)
@@ -223,3 +227,20 @@
 	..()
 	if(rolled_down == TRUE)
 		remove_mask()
+
+/obj/item/clothing/under/dominia/dress
+	name = "dominian noblewoman dress"
+	desc = "This is a dress in the style of Dominian nobility. It's the latest fashion across Dominian space."
+	icon = 'icons/clothing/under/uniforms/dominia_noble_dress.dmi'
+	icon_state = "dom_dress"
+	item_state = "dom_dress"
+	contained_sprite = TRUE
+
+/obj/item/clothing/under/dominia/dress/summer
+	name = "dominian summer dress"
+	desc = "This is a dress in the style of Dominian nobility. It's the latest fashion across Dominian space."
+	icon = 'icons/clothing/under/uniforms/dominia_summer_dress.dmi'
+	icon_state = "dom_dress"
+	item_state = "dom_dress"
+	contained_sprite = TRUE
+

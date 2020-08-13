@@ -112,11 +112,11 @@
 	if(owner.species && owner.species.flags & NO_BLOOD)
 		return
 
-	if(!owner || owner.stat == DEAD || owner.bodytemperature < 170 || owner.in_stasis)	//Dead or cryosleep people do not pump the blood.
+	if(!owner || owner.stat == DEAD || owner.bodytemperature < 170 || owner.InStasis())	//Dead or cryosleep people do not pump the blood.
 		return
 
 	if(pulse != PULSE_NONE || BP_IS_ROBOTIC(src))
-		var/blood_volume = round(owner.vessel.get_reagent_amount("blood"))
+		var/blood_volume = round(owner.vessel.get_reagent_amount(/datum/reagent/blood))
 
 		//Blood regeneration if there is some space
 		if(blood_volume < species.blood_volume && blood_volume)
@@ -160,7 +160,7 @@
 						blood_max += bleed_amount
 						do_spray += "[temp.name]"
 					else
-						owner.vessel.remove_reagent("blood", bleed_amount)
+						owner.vessel.remove_reagent(/datum/reagent/blood, bleed_amount)
 
 		switch(pulse)
 			if(PULSE_SLOW)

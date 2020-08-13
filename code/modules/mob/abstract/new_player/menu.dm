@@ -51,21 +51,44 @@
 /obj/screen/new_player/title
 	name = "Title"
 	screen_loc = "WEST,SOUTH"
+	var/lobby_index = 1
 
 /obj/screen/new_player/title/Initialize()
+	if(!current_map.lobby_icon)
+		current_map.lobby_icon = pick(current_map.lobby_icons)
+	if(!length(current_map.lobby_screens))
+		var/list/known_icon_states = icon_states(current_map.lobby_icon)
+		for(var/screen in known_icon_states)
+			if(!(screen in current_map.lobby_screens))
+				current_map.lobby_screens += screen
 	icon = current_map.lobby_icon
-	var/list/known_icon_states = icon_states(icon)
-	for(var/lobby_screen in current_map.lobby_screens)
-		if(!(lobby_screen in known_icon_states))
-			error("Lobby screen '[lobby_screen]' did not exist in the icon set [icon].")
-			current_map.lobby_screens -= lobby_screen
 
 	if(length(current_map.lobby_screens))
-		icon_state = pick(current_map.lobby_screens)
-	else
-		icon_state = known_icon_states[1]
+		if(current_map.lobby_transitions && isnum(current_map.lobby_transitions))
+			icon_state = current_map.lobby_screens[lobby_index]
+			if(Master.initializing)
+				spawn(current_map.lobby_transitions)
+					Update()
+			else
+				addtimer(CALLBACK(src, .proc/Update), current_map.lobby_transitions, TIMER_UNIQUE | TIMER_CLIENT_TIME | TIMER_OVERRIDE)
+		else
+			icon_state = pick(current_map.lobby_screens)
+	else //This should basically never happen.
+		crash_with("No lobby screens found!")
 
 	. = ..()
+
+/obj/screen/new_player/title/proc/Update()
+	lobby_index += 1
+	if (lobby_index > length(current_map.lobby_screens))
+		lobby_index = 1
+	animate(src, alpha = 0, time = 1 SECOND)
+	animate(alpha = 255, icon_state = current_map.lobby_screens[lobby_index], time = 1 SECOND)
+	if(Master.initializing)
+		spawn(current_map.lobby_transitions)
+			Update()
+	else
+		addtimer(CALLBACK(src, .proc/Update), current_map.lobby_transitions, TIMER_UNIQUE | TIMER_CLIENT_TIME | TIMER_OVERRIDE)
 
 /obj/screen/new_player/selection/join_game
 	name = "Join Game"
@@ -105,10 +128,14 @@
 
 /obj/screen/new_player/selection/MouseEntered(location,control,params) //Yellow color for the font
 	color = "#ffb200"
+	var/matrix/M = matrix()
+	M.Scale(1.1, 1.1)
+	animate(src, transform = M, time = 1, easing = CUBIC_EASING)
 	return ..()
 
 /obj/screen/new_player/selection/MouseExited(location,control,params)
 	color = null
+	animate(src, transform = null, time = 1, easing = CUBIC_EASING)
 	return ..()
 
 /obj/screen/new_player/selection/join_game/New(var/datum/hud/H)
@@ -118,7 +145,7 @@
 
 /obj/screen/new_player/selection/join_game/Click()
 	var/mob/abstract/new_player/player = usr
-	sound_to(player, 'sound/effects/pop.ogg')
+	sound_to(player, 'sound/effects/menu_click.ogg')
 	if(SSticker.current_state <= GAME_STATE_SETTING_UP)
 		if(player.ready)
 			player.ready = FALSE
@@ -141,27 +168,27 @@
 
 /obj/screen/new_player/selection/manifest/Click()
 	var/mob/abstract/new_player/player = usr
-	sound_to(player, 'sound/effects/pop.ogg')
+	sound_to(player, 'sound/effects/menu_click.ogg')
 	player.ViewManifest()
 
 /obj/screen/new_player/selection/observe/Click()
 	var/mob/abstract/new_player/player = usr
-	sound_to(player, 'sound/effects/pop.ogg')
+	sound_to(player, 'sound/effects/menu_click.ogg')
 	player.new_player_observe()
 
 /obj/screen/new_player/selection/settings/Click()
 	var/mob/abstract/new_player/player = usr
-	sound_to(player, 'sound/effects/pop.ogg')
+	sound_to(player, 'sound/effects/menu_click.ogg')
 	player.setupcharacter()
 
 /obj/screen/new_player/selection/changelog/Click()
 	var/mob/abstract/new_player/player = usr
-	sound_to(player, 'sound/effects/pop.ogg')
+	sound_to(player, 'sound/effects/menu_click.ogg')
 	player.client.changes()
 
 /obj/screen/new_player/selection/poll/Click()
 	var/mob/abstract/new_player/player = usr
-	sound_to(player, 'sound/effects/pop.ogg')
+	sound_to(player, 'sound/effects/menu_click.ogg')
 	player.handle_player_polling()
 
 /mob/abstract/new_player/proc/setupcharacter()
@@ -214,7 +241,7 @@
 		observer.timeofdeath = world.time // Set the time of death so that the respawn timer works correctly.
 
 		announce_ghost_joinleave(src)
-		var/mob/living/carbon/human/dummy/mannequin = SSmob.get_mannequin(client.ckey)
+		var/mob/living/carbon/human/dummy/mannequin/mannequin = new
 		client.prefs.dress_preview_mob(mannequin)
 		observer.appearance = mannequin
 		observer.alpha = 127

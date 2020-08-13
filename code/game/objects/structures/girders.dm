@@ -150,7 +150,7 @@
 			return
 
 	else if(W.iswirecutter() && state == 1)
-		playsound(src.loc, 'sound/items/Wirecutter.ogg', 100, 1)
+		playsound(src.loc, 'sound/items/wirecutter.ogg', 100, 1)
 		to_chat(user, "<span class='notice'>Now removing support struts...</span>")
 		if(do_after(user,40/W.toolspeed))
 			if(!src) return
@@ -159,7 +159,7 @@
 			reset_girder()
 
 	else if(W.iscrowbar() && state == 0 && anchored)
-		playsound(src.loc, 'sound/items/Crowbar.ogg', 100, 1)
+		playsound(src.loc, W.usesound, 100, 1)
 		to_chat(user, "<span class='notice'>Now dislodging the girder...</span>")
 		if(do_after(user, 40/W.toolspeed))
 			if(!src) return
@@ -181,20 +181,18 @@
 		var/damage_to_deal = W.force
 		var/weaken = 0
 		if(reinf_material)
-			weaken += reinf_material.integrity * 2.5 //Since girders don't have a secondary material, buff 'em up a bit.
+			weaken += reinf_material.integrity * 3 //Since girders don't have a secondary material, buff 'em up a bit.
 		weaken /= 100
-		visible_message("<span class='notice'>[user] retracts their [W] and starts winding up a strike...</span>")
-		var/hit_delay = W.w_class * 10 //Heavier weapons take longer to swing, yeah?
-		if(do_after(user, hit_delay))
-			do_attack_animation(src)
-			playsound(src, 'sound/weapons/smash.ogg', 50)
-			if(damage_to_deal > weaken && (damage_to_deal > MIN_DAMAGE_TO_HIT))
-				damage_to_deal -= weaken
-				visible_message("<span class='warning'>[user] strikes \the [src] with \the [W], [is_sharp(W) ? "slicing" : "denting"] a support rod!</span>")
-				take_damage(damage_to_deal)
-			else
-				visible_message("<span class='warning'>[user] strikes \the [src] with \the [W], but it bounces off!</span>")
-			return
+		do_attack_animation(src)
+		playsound(src, 'sound/weapons/smash.ogg', 50)
+		if(damage_to_deal > weaken && (damage_to_deal > MIN_DAMAGE_TO_HIT))
+			damage_to_deal -= weaken
+			visible_message("<span class='warning'>[user] strikes \the [src] with \the [W], [is_sharp(W) ? "slicing" : "denting"] a support rod!</span>")
+			take_damage(damage_to_deal)
+		else
+			visible_message("<span class='warning'>[user] strikes \the [src] with \the [W], but it bounces off!</span>")
+		user.setClickCooldown(DEFAULT_ATTACK_COOLDOWN)
+		return
 
 	return ..()
 
@@ -226,8 +224,10 @@
 		wall_fake = 1
 
 	var/turf/Tsrc = get_turf(src)
+	var/original_type = Tsrc.type
 	Tsrc.ChangeTurf(/turf/simulated/wall)
-	var/turf/simulated/wall/T = get_turf(src)
+	var/turf/simulated/wall/T = Tsrc
+	T.under_turf = original_type
 	T.set_material(M, reinf_material)
 	if(wall_fake)
 		T.can_open = 1

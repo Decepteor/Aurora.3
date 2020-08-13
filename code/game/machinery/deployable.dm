@@ -279,15 +279,15 @@ for reference:
 	var/assembly_time = 8 SECONDS
 
 /obj/item/deployable_kit/attack_self(mob/user)
-	to_chat(user, span("notice","You start assembling \the [src]..."))
+	to_chat(user, SPAN_NOTICE("You start assembling \the [src]..."))
 	if(do_after(user, assembly_time))
 		assemble_kit(user)
 		qdel(src)
 
 /obj/item/deployable_kit/proc/assemble_kit(mob/user)
-	playsound(src.loc, 'sound/items/Screwdriver.ogg', 25, 1)
+	playsound(src.loc, 'sound/items/screwdriver.ogg', 25, 1)
 	var/atom/A = new kit_product(user.loc)
-	user.visible_message(span("notice","[user] assembles \a [A]."),span("notice","You assemble \a [A]."))
+	user.visible_message(SPAN_NOTICE("[user] assembles \a [A]."), SPAN_NOTICE("You assemble \a [A]."))
 	A.add_fingerprint(user)
 
 /obj/item/deployable_kit/legion_barrier

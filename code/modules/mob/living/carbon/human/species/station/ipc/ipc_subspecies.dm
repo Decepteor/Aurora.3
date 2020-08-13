@@ -44,7 +44,7 @@
 		"Your synthetic flesh crawls in the heat, swelling into a disgusting morass of plastic."
 		)
 
-	appearance_flags = HAS_HAIR_COLOR | HAS_SKIN_TONE | HAS_EYE_COLOR | HAS_FBP | HAS_UNDERWEAR | HAS_SOCKS | HAS_SKIN_PRESET
+	appearance_flags = HAS_HAIR_COLOR | HAS_SKIN_TONE | HAS_EYE_COLOR | HAS_FBP | HAS_SKIN_PRESET | HAS_UNDERWEAR | HAS_SOCKS | HAS_LIPS
 
 	has_limbs = list(
 		BP_CHEST =  list("path" = /obj/item/organ/external/chest/shell),
@@ -73,12 +73,14 @@
 
 	bodyfall_sound = "bodyfall"
 
+	allowed_accents = list(ACCENT_CETI, ACCENT_GIBSON, ACCENT_SOL, ACCENT_COC, ACCENT_ERIDANI, ACCENT_ERIDANIDREG, ACCENT_ELYRA, ACCENT_KONYAN, ACCENT_JUPITER, ACCENT_MARTIAN, ACCENT_LUNA, 
+							ACCENT_HIMEO, ACCENT_VENUS, ACCENT_VENUSJIN, ACCENT_PHONG, ACCENT_SILVERSUN, ACCENT_SILICON)
+
 /datum/species/machine/shell/get_light_color()
 	return
 
 /datum/species/machine/shell/handle_death(var/mob/living/carbon/human/H)
 	return
-
 
 /datum/species/machine/shell/rogue
 	name = "Rogue Shell"
@@ -152,7 +154,7 @@
 		)
 
 	flags = IS_IPC | ACCEPTS_COOLER
-	appearance_flags = HAS_EYE_COLOR
+	appearance_flags = HAS_EYE_COLOR | HAS_UNDERWEAR | HAS_SOCKS
 
 	heat_level_1 = 800
 	heat_level_2 = 1600
@@ -228,7 +230,7 @@
 
 	flags = IS_IPC | ACCEPTS_COOLER
 	spawn_flags = IS_RESTRICTED
-	appearance_flags = HAS_HAIR_COLOR
+	appearance_flags = HAS_HAIR_COLOR | HAS_UNDERWEAR | HAS_SOCKS
 	vision_flags = DEFAULT_SIGHT | SEE_MOBS
 
 	virus_immune = 1
@@ -419,7 +421,7 @@
 
 	slowdown = -1.2
 
-	appearance_flags = HAS_EYE_COLOR
+	appearance_flags = HAS_EYE_COLOR | HAS_UNDERWEAR | HAS_SOCKS
 
 	examine_color = "#ff00ff"
 
@@ -444,6 +446,7 @@
 		/mob/living/carbon/human/proc/check_tag
 		)
 
+
 /datum/species/machine/zenghu/get_light_color(mob/living/carbon/human/H)
 	if (istype(H))
 		return rgb(H.r_eyes, H.g_eyes, H.b_eyes)
@@ -466,7 +469,7 @@
 	grab_mod = 1.1
 	resist_mod = 4
 
-	appearance_flags = HAS_EYE_COLOR
+	appearance_flags = HAS_EYE_COLOR | HAS_UNDERWEAR | HAS_SOCKS
 
 	examine_color = "#00afea"
 
@@ -490,6 +493,9 @@
 		/mob/living/carbon/human/proc/self_diagnostics,
 		/mob/living/carbon/human/proc/check_tag
 		)
+
+	allowed_accents = list(ACCENT_CETI, ACCENT_GIBSON, ACCENT_SOL, ACCENT_COC, ACCENT_ERIDANI, ACCENT_ERIDANIDREG, ACCENT_ELYRA, ACCENT_KONYAN, ACCENT_JUPITER, ACCENT_MARTIAN, ACCENT_LUNA, 
+							ACCENT_HIMEO, ACCENT_VENUS, ACCENT_VENUSJIN, ACCENT_PHONG, ACCENT_SILVERSUN, ACCENT_SILICON)
 
 /datum/species/machine/bishop/get_light_color(mob/living/carbon/human/H)
 	if (istype(H))
